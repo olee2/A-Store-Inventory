@@ -9,6 +9,7 @@ db = SqliteDatabase("inventory.db")
 
 
 class Product(Model):
+    
     product_id = AutoField()
     product_name = CharField(unique=True)
     product_quantity = IntegerField(default=0)
@@ -20,11 +21,15 @@ class Product(Model):
 
 
 def initialize():
+    """Connect to and create tables in the database"""
+    
     db.connect()
     db.create_tables([Product], safe=True)
 
 
 def import_and_clean():
+    """Import and clean data from a csv-file"""
+    
     with open("inventory.csv", newline="") as csvfile:
         inventory = csv.DictReader(csvfile)
         rows = list(inventory)
@@ -83,11 +88,15 @@ def add_product(name="", price=0, quantity=0, date=datetime.datetime.now()):
 
             
 def add_imported(products):
+    """Add a list of products to the database"""
+    
     for product in products:
         add_product(product["product_name"], product["product_quantity"], product["product_price"], product["date_updated"])
 
         
 def clear():
+    """Clear the terminal"""
+    
     os.system("cls" if os.name == "nt" else "clear")
 
 
@@ -115,7 +124,8 @@ def view_product():
                     break
                     
                 except:
-                    print("\nOnly {} product(s) in the inventory. Try again.".format(Product.select().order_by(Product.product_id.desc()).get()))
+                    num_items = Product.select().order_by(Product.product_id.desc()).get()
+                    print("\nOnly {} product(s) in the inventory. Try again.".format(num_items))
                     continue
 
             else:
@@ -147,6 +157,7 @@ def backup():
 
 
 def menu_loop():
+    """Interact with the menu to chose action"""
 
     action = None
     
